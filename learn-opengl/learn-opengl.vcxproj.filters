@@ -39,5 +39,7 @@
   <ItemGroup>
     <None Include="src\c6example.vs" />
     <None Include="src\c6example.fs" />
+    <None Include="src\example.fs" />
+    <None Include="src\example.vs" />
   </ItemGroup>
 </Project>

@@ -41,6 +41,7 @@ public:
 		catch (std::ifstream::failure e)
 		{
 			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ\n" << std::endl;
+			return;
 		}
 		const char* vShaderCode = vertexCode.c_str();
 		const char* fShaderCode = fragmentCode.c_str();
@@ -59,6 +60,7 @@ public:
 		{
 			glGetShaderInfoLog(vertex, 512, NULL, infoLog);
 			std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+			return;
 		}
 
 		fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -70,6 +72,7 @@ public:
 		{
 			glGetShaderInfoLog(fragment, 512, NULL, infoLog);
 			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+			return;
 		}
 
 		ID = glCreateProgram();
@@ -100,9 +103,17 @@ public:
 	{
 		glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 	}
-	void setFloat(const std::string& name, float value)
+	void setFloat1(const std::string& name, float x)
 	{
-		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+		glUniform1f(glGetUniformLocation(ID, name.c_str()), x);
+	}
+	void setFloat2(const std::string& name, float x, float y)
+	{
+		glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
+	}
+	void setFloat3(const std::string& name, float x, float y, float z)
+	{
+		glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 	}
 };
 

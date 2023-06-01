@@ -144,7 +144,11 @@
     <ClInclude Include="src\Chapter5.h" />
     <ClInclude Include="src\Chapter6.h" />
     <ClInclude Include="src\Main.h" />
+    <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\Object.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\stb.h" />
+    <ClInclude Include="src\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\c6example.fs" />

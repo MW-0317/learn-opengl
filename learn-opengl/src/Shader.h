@@ -96,13 +96,31 @@ public:
 	{
 		glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 	}
-	void setInt(const std::string& name, int value)
+
+	void setInt(const std::string& name, int x)
 	{
-		glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+		glUniform1i(glGetUniformLocation(ID, name.c_str()), x);
 	}
-	void setFloat(const std::string& name, float value)
+	void setInt2(const std::string& name, int x, int y)
 	{
-		glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+		glUniform2i(glGetUniformLocation(ID, name.c_str()), x, y);
+	}
+	void setInt3(const std::string& name, int x, int y, int z)
+	{
+		glUniform3i(glGetUniformLocation(ID, name.c_str()), x, y, z);
+	}
+
+	void setFloat(const std::string& name, float x)
+	{
+		glUniform1f(glGetUniformLocation(ID, name.c_str()), x);
+	}
+	void setFloat2(const std::string& name, float x, float y)
+	{
+		glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y);
+	}
+	void setFloat3(const std::string& name, float x, float y, float z)
+	{
+		glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z);
 	}
 };
 

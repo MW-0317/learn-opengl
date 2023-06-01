@@ -1,8 +1,12 @@
 #pragma once
+#include "stb.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "Material.h"
+#include "Object.h"
 #include "Shader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -16,13 +20,80 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 }
 
+// Sprite (Will need to be class in final) NEED TO REFACTOR
+/*
+void spriteSize(int width, int height, int nWidth, int nHeight)
+{
+
+}
+
+void spriteIndexToCoords(int index, int width, int height, int nWidth, int nHeight, int* x, int* y)
+{
+    int spriteWidth = (int)(width / nWidth);
+    int spriteHeight = (int)(height / nHeight);
+    *x = (index % nWidth) * (spriteWidth);
+    *y = (index % nHeight) * (spriteHeight);
+}
+
+void coordsToTexCoords(int x, int y, int maxX, int maxY, float* fx, float* fy)
+{
+    *fx = (float)x / maxX;
+    *fy = (float)y / maxY;
+}
+
+void setTexCoords(float* vertexArray, int x, int y, int sizeX, int sizeY, int width, int height, int vLen, int texIndex)
+{
+    float fx;
+    float fy;
+    coordsToTexCoords(x, y, width, height, &fx, &fy);
+    // top right
+    (vertexArray)[texIndex] = fx;
+    (vertexArray)[texIndex + 1] = fy;
+
+    // bottom right
+    (vertexArray)[texIndex + vLen] = fx;
+    (vertexArray)[texIndex + vLen + 1] = fy;
+}
+
+void setSpriteIndex(float* vertexArray, int index, int width, int height, int nWidth, int nHeight, int vLen, int texIndex)
+{
+    int x;
+    int y;
+    spriteIndexToCoords(index, width, height, nWidth, nHeight, &x, &y);
+    setTexCoords(vertexArray, x, y, width, height, vLen, texIndex);
+}
+
+*/
+
 int run()
 {
-    float vertices[] = {
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
-         0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f   // top
+    float triangleVertices[] = {
+//     |Positions         |Colors           |TexCoords
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom left
+         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f  // top
     };
+
+    float boxVertices[] = {
+//     |Positions         |Colors           |TexCoords
+         0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+        -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, // top left
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+    };
+
+    for (int i = 0; i < 32; i++)
+    {
+        std::cout << boxVertices[i] << " ";
+    }
+    std::cout << std::endl;
+
+    unsigned int boxElements[] = {
+        0, 1, 2,
+        1, 3, 2
+    };
+
+    stbi_set_flip_vertically_on_load(true);
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -47,37 +118,50 @@ int run()
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    Shader ourShader("C:/dev/learn-opengl-contents/learn-opengl/learn-opengl/src./c6example.vs",
-        "C:/dev/learn-opengl-contents/learn-opengl/learn-opengl/src././c6example.fs");
+    Shader ourShader(
+        "./shaders/example.vs",
+        "./shaders/example.fs"
+    );
 
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    Texture* tex = new Texture("./images/example.png", {1.0f, 1.0f,
+                                                        1.0f, 0.0f,
+                                                        0.0f, 1.0f,
+                                                        0.0f, 0.0f});
 
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    Material* mat = new Material(tex, new Color(0.0, 0.0, 0.0, 1.0));
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    std::vector<Point*> pointVector = { new Point(0.5f, 0.5f, 0.0f),
+                                        new Point(0.5f, -0.5f, 0.0f),
+                                        new Point(-0.5f, 0.5f, 0.0f),
+                                        new Point(-0.5f, -0.5f, 0.0f) };
+
+    unsigned int elements[] = { 0, 1, 2,
+                         1, 3, 2 };
+
+    Object* obj = new Object(pointVector, elements, mat);
+    
+
+    //setSpriteIndex(boxVertices, 6, width, height, 4, 8, 8, 6);
 
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
 
+        ourShader.setFloat3("backgroundColor", 0.2f, 0.3f, 0.3f);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        tex->use();
         ourShader.use();
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(obj->VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //obj->draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    
+
     glfwTerminate();
 
     return 0;

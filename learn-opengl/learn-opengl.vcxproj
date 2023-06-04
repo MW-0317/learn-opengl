@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="src\Chapter5.h" />
     <ClInclude Include="src\Chapter6.h" />
+    <ClInclude Include="src\DefaultMeshes.h" />
     <ClInclude Include="src\Main.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\stb.h" />

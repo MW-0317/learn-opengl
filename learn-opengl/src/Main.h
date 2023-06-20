@@ -275,9 +275,6 @@ int run()
         projection = glm::perspective(glm::radians(fov), (float) wWIDTH / (float) wHEIGHT, 0.1f, 100.0f);
 
         objectShader.use();
-        objectShader.setFloat3("objectColor", 1.0f, 0.5f, 0.31f);
-        objectShader.setFloat3("lightColor", 1.0f, 1.0f, 1.0f);
-        objectShader.setVec3("lightPos", cubePositions[2]);
 
         glm::vec3 lightColor;
         lightColor.x = 1.0f;
@@ -291,6 +288,15 @@ int run()
         objectShader.setFloat1("material.shininess", 32.0f);
 
         // Light
+        objectShader.setVec3("light.position", cam.cameraPos);
+        objectShader.setVec3("light.direction", cam.cameraFront);
+        objectShader.setFloat1("light.cutoff", glm::cos(glm::radians(12.5f)));
+        objectShader.setFloat1("light.outerCutoff", glm::cos(glm::radians(17.5f)));
+
+        objectShader.setFloat1("light.constant", 1.0f);
+        objectShader.setFloat1("light.linear", 0.09f);
+        objectShader.setFloat1("light.quadratic", 0.032f);
+
         objectShader.setVec3("light.ambient", ambientColor);
         objectShader.setVec3("light.diffuse", diffuseColor);
         objectShader.setFloat3("light.specular", 1.0f, 1.0f, 1.0f);
@@ -306,20 +312,25 @@ int run()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, specularMap);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, cubePositions[0]);
-        //model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        objectShader.setMat4("model", model);
-        objectShader.setVec3("viewPos", cam.cameraPos);
-
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        for (unsigned int i = 3; i < 10; i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            objectShader.setMat4("model", model);
+            objectShader.setVec3("viewPos", cam.cameraPos);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        
 
         lightShader.use();
 
         lightShader.setMat4("view", view);
         lightShader.setMat4("projection", projection);
-        model = glm::mat4(1.0f);
+        glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, cubePositions[2]);
         model = glm::scale(model, glm::vec3(0.2f));
         lightShader.setMat4("model", model);
